@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torres de Hanoi</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        canvas {
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #000;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Torres de Hanoi - 3 Discos</h1>
+    <div id="hanoiCanvas"></div>
+    <button id="resetButton">Reiniciar</button>
+
+    <script>
+        const ANCHO = 600;
+        const ALTO = 400;
+        const NUM_DISCOS = 3;
+        const POSTE_ANCHO = 10;
+        const POSTE_ALTO = 200;
+
+        let postes = [[], [], []]; // Representación de los discos en cada poste
+        let discoSeleccionado = null; // Disco seleccionado para mover
+        let posteOrigen = null; // Poste de origen del disco seleccionado
+
+        function setup() {
+            let canvas = createCanvas(ANCHO, ALTO);
+            canvas.parent('hanoiCanvas');
+            resetJuego();
+        }
+
+        function draw() {
+            background(255);
+            dibujarPostes();
+            dibujarDiscos();
+        }
+
+        function resetJuego() {
+            postes = [[], [], []];
+            for (let i = NUM_DISCOS; i > 0; i--) {
+                postes[2].push(i); // Inicializar todos los discos en el tercer poste
+            }
+            discoSeleccionado = null;
+            posteOrigen = null;
+        }
+
+        function dibujarPostes() {
+            fill(0);
+            for (let i = 0; i < 3; i++) {
+                let x = (i + 1) * (ANCHO / 4);
+                rect(x - POSTE_ANCHO / 2, ALTO - POSTE_ALTO, POSTE_ANCHO, POSTE_ALTO);
+            }
+        }
+      
