@@ -12,16 +12,16 @@
             background-position: center;
             background-repeat: no-repeat;
         }
-    
+
         .logo {
             display: block; 
             margin: 0 auto; 
             width: 150px; 
             height: auto; 
         }
-    
+
         #ReglasCaballo, #infocaballo, #infotorres, #Juegocaballo, #infoAha, #PseudocodigoAha, #juegoTorres {
-            display: none;
+            display: none; /* Ocultar todas las secciones al inicio */
             margin-top: 20px;
             padding: 10px;
             border: 1px solid #b13232;
@@ -40,14 +40,14 @@
             margin-right: 20px; /* Espacio entre info y diagrama */
         }
 
-        #diagramaHanoi {
-            display: none; /* Oculto por defecto */
+        #diagramaHanoi, #diagramaAha {
+            display: none; /* Ocultos por defecto */
             max-width: 300px; /* Ajusta el tamaño según necesites */
             height: auto;
         }
 
-        /* Estilo para el canvas de Torres de Hanoi */
-        #juegoTorres canvas {
+        /* Estilo para el canvas de los juegos */
+        #Juegocaballo canvas, #juegoTorres canvas {
             display: block;
             margin: 20px auto;
             border: 1px solid #000;
@@ -144,93 +144,10 @@
         </ol>
     </div>
 
-    <!--juego Caballo-->
-    <div id="Juegocaballo">
-        <script>
-            const ANCHO = 400;
-            const ALTO = 400;
-            const TAMANO_CASILLA = ANCHO / 8;
-            let caballoPos = { fila: 0, columna: 0 };
+    <!-- Juego del Caballo -->
+    <div id="Juegocaballo"></div>
 
-            function setup() {
-                let canvas = createCanvas(ANCHO, ALTO);
-                canvas.parent('Juegocaballo');
-                caballoPos = { fila: 7, columna: 4 };
-            }
-
-            function draw() {
-                dibujarTablero();
-                mostrarMovimientos(caballoPos.fila, caballoPos.columna);
-                dibujarCaballo(caballoPos.fila, caballoPos.columna);
-            }
-
-            function dibujarTablero() {
-                for (let fila = 0; fila < 8; fila++) {
-                    for (let columna = 0; columna < 8; columna++) {
-                        let color = (fila + columna) % 2 === 0 ? 'white' : 'black';
-                        fill(color);
-                        stroke(0);
-                        rect(columna * TAMANO_CASILLA, fila * TAMANO_CASILLA, TAMANO_CASILLA, TAMANO_CASILLA);
-                    }
-                }
-            }
-
-            function dibujarCaballo(fila, columna) {
-                let x = columna * TAMANO_CASILLA + TAMANO_CASILLA / 2;
-                let y = fila * TAMANO_CASILLA + TAMANO_CASILLA / 2;
-                fill('red');
-                noStroke();
-                ellipse(x, y, TAMANO_CASILLA / 1.5);
-            }
-
-            function mostrarMovimientos(fila, columna) {
-                let movimientos = [
-                    { fila: fila + 2, columna: columna + 1 },
-                    { fila: fila + 2, columna: columna - 1 },
-                    { fila: fila - 2, columna: columna + 1 },
-                    { fila: fila - 2, columna: columna - 1 },
-                    { fila: fila + 1, columna: columna + 2 },
-                    { fila: fila + 1, columna: columna - 2 },
-                    { fila: fila - 1, columna: columna + 2 },
-                    { fila: fila - 1, columna: columna - 2 },
-                ];
-
-                for (let m of movimientos) {
-                    if (m.fila >= 0 && m.fila < 8 && m.columna >= 0 && m.columna < 8) {
-                        let x = m.columna * TAMANO_CASILLA + TAMANO_CASILLA / 2;
-                        let y = m.fila * TAMANO_CASILLA + TAMANO_CASILLA / 2;
-                        fill('green');
-                        noStroke();
-                        ellipse(x, y, TAMANO_CASILLA / 3);
-                    }
-                }
-            }
-
-            function mousePressed() {
-                let columna = Math.floor(mouseX / TAMANO_CASILLA);
-                let fila = Math.floor(mouseY / TAMANO_CASILLA);
-                let movimientosValidos = [
-                    { fila: caballoPos.fila + 2, columna: caballoPos.columna + 1 },
-                    { fila: caballoPos.fila + 2, columna: caballoPos.columna - 1 },
-                    { fila: caballoPos.fila - 2, columna: caballoPos.columna + 1 },
-                    { fila: caballoPos.fila - 2, columna: caballoPos.columna - 1 },
-                    { fila: caballoPos.fila + 1, columna: caballoPos.columna + 2 },
-                    { fila: caballoPos.fila + 1, columna: caballoPos.columna - 2 },
-                    { fila: caballoPos.fila - 1, columna: caballoPos.columna + 2 },
-                    { fila: caballoPos.fila - 1, columna: caballoPos.columna - 2 },
-                ];
-
-                for (let m of movimientosValidos) {
-                    if (m.fila === fila && m.columna === columna) {
-                        caballoPos = { fila, columna };
-                        break;
-                    }
-                }
-            }
-        </script>
-    </div>
-
-    <!-- Torres -->
+    <!-- Torres de Hanoi -->
     <div id="torresContainer">
         <div id="infotorres">
             <h3>Pseudo código Torres</h3>
@@ -262,88 +179,6 @@
     <!-- Juego Torres de Hanoi -->
     <div id="juegoTorres">
         <button id="resetButton">Reiniciar</button>
-        <script>
-            const ANCHO_TORRES = 600;
-            const ALTO_TORRES = 400;
-            const NUM_DISCOS = 3;
-            const POSTE_ANCHO = 10;
-            const POSTE_ALTO = 200;
-            const DISCO_ALTURA = 20;
-            const DISCO_ANCHO_MIN = 40;
-            const DISCO_ANCHO_MAX = 120;
-
-            let postes = [[], [], []];
-            let discoSeleccionado = null;
-            let posteOrigen = null;
-
-            function setup() {
-                let canvas = createCanvas(ANCHO_TORRES, ALTO_TORRES);
-                canvas.parent('juegoTorres');
-                resetJuego();
-            }
-
-            function draw() {
-                background(255);
-                dibujarPostes();
-                dibujarDiscos();
-            }
-
-            function resetJuego() {
-                postes = [[], [], []];
-                for (let i = NUM_DISCOS; i > 0; i--) {
-                    postes[2].push(i);
-                }
-                discoSeleccionado = null;
-                posteOrigen = null;
-            }
-
-            function dibujarPostes() {
-                fill(0);
-                for (let i = 0; i < 3; i++) {
-                    let x = (i + 1) * (ANCHO_TORRES / 4);
-                    rect(x - POSTE_ANCHO / 2, ALTO_TORRES - POSTE_ALTO, POSTE_ANCHO, POSTE_ALTO);
-                }
-            }
-
-            function dibujarDiscos() {
-                for (let i = 0; i < 3; i++) {
-                    for (let j = 0; j < postes[i].length; j++) {
-                        let disco = postes[i][j];
-                        let x = (i + 1) * (ANCHO_TORRES / 4);
-                        let y = ALTO_TORRES - (j + 1) * DISCO_ALTURA;
-                        let ancho = map(disco, 1, NUM_DISCOS, DISCO_ANCHO_MIN, DISCO_ANCHO_MAX);
-                        fill(100 + disco * 50, 0, 0);
-                        rect(x - ancho / 2, y, ancho, DISCO_ALTURA);
-                    }
-                }
-            }
-
-            function mousePressed() {
-                let poste = Math.floor(mouseX / (ANCHO_TORRES / 4)) - 1;
-                if (poste < 0 || poste > 2) return;
-
-                if (discoSeleccionado === null) {
-                    if (postes[poste].length > 0) {
-                        discoSeleccionado = postes[poste].pop();
-                        posteOrigen = poste;
-                    }
-                } else {
-                    if (postes[poste].length === 0 || postes[poste][postes[poste].length - 1] > discoSeleccionado) {
-                        postes[poste].push(discoSeleccionado);
-                        discoSeleccionado = null;
-                        posteOrigen = null;
-                    } else {
-                        postes[posteOrigen].push(discoSeleccionado);
-                        discoSeleccionado = null;
-                        posteOrigen = null;
-                    }
-                }
-            }
-
-            document.getElementById('resetButton').addEventListener('click', function () {
-                resetJuego();
-            });
-        </script>
     </div>
 
     <!-- AHA -->
@@ -356,9 +191,8 @@
         <p>Dado un problema de optimización, se busca minimizar o maximizar una función objetivo \( f(x) \), donde \( x \) es un vector de variables de decisión en un espacio de búsqueda \( S \):</p>
         <p>\[ \text{Minimizar o maximizar } f(x), \quad x \in S. \]</p>
 
-        <!-- Imagen del diagrama AHA -->
-        <img src="Diagrama aha.png" alt="Diagrama del Algoritmo Heurístico Adaptativo" id="diagramaAha" style="display: none; max-width: 100%; height: auto;">
-
+        <img src="Diagrama aha.png" alt="Diagrama del Algoritmo Heurístico Adaptativo" id="diagramaAha">
+        
         <div id="PseudocodigoAha">
             <p>1. Inicialización:</p>
             <p>    - Definir la función objetivo f(x) a optimizar.</p>
@@ -393,60 +227,229 @@
             <p>4. Terminación:</p>
             <p>- Devolver la mejor solución encontrada: x_best.</p>
             <p>- Devolver el valor de la función objetivo: f(x_best).</p>
-
-
         </div>
     </div>
 
-
     <script>
-        const caballoButton = document.getElementById('caballoButton');
-        const torreButton = document.getElementById('torreButton');
-        const AhaButton = document.getElementById('AhaButton');
-        const reglasCaballo = document.getElementById('ReglasCaballo');
-        const infoCaballo = document.getElementById('infocaballo');
-        const infoTorres = document.getElementById('infotorres');
-        const infoAha = document.getElementById('infoAha');
-        const juegoCaballo = document.getElementById('Juegocaballo');
-        const pseudocodigoAha = document.getElementById('PseudocodigoAha');
-        const juegoTorres = document.getElementById('juegoTorres');
-        const diagramaAha = document.getElementById('diagramaAha');
-        const diagramaHanoi = document.getElementById('diagramaHanoi');
+        // Función para ocultar todas las secciones
+        function ocultarTodasLasSecciones() {
+            document.getElementById('ReglasCaballo').style.display = 'none';
+            document.getElementById('infocaballo').style.display = 'none';
+            document.getElementById('Juegocaballo').style.display = 'none';
+            document.getElementById('infotorres').style.display = 'none';
+            document.getElementById('juegoTorres').style.display = 'none';
+            document.getElementById('infoAha').style.display = 'none';
+            document.getElementById('PseudocodigoAha').style.display = 'none';
+            document.getElementById('diagramaHanoi').style.display = 'none';
+            document.getElementById('diagramaAha').style.display = 'none';
+        }
 
-        caballoButton.addEventListener('click', function () {
-            reglasCaballo.style.display = 'block';
-            infoCaballo.style.display = 'block';
-            juegoCaballo.style.display = 'block';
-            infoTorres.style.display = 'none';
-            juegoTorres.style.display = 'none';
-            diagramaHanoi.style.display = 'none';
-            infoAha.style.display = 'none';
-            pseudocodigoAha.style.display = 'none';
-            diagramaAha.style.display = 'none';
+        // Manejo de los botones
+        document.getElementById('caballoButton').addEventListener('click', function () {
+            ocultarTodasLasSecciones();
+            document.getElementById('ReglasCaballo').style.display = 'block';
+            document.getElementById('infocaballo').style.display = 'block';
+            document.getElementById('Juegocaballo').style.display = 'block';
         });
 
-        torreButton.addEventListener('click', function () {
-            infoTorres.style.display = 'block';
-            juegoTorres.style.display = 'block';
-            diagramaHanoi.style.display = 'block'; // Mostrar el diagrama
-            reglasCaballo.style.display = 'none';
-            infoCaballo.style.display = 'none';
-            juegoCaballo.style.display = 'none';
-            infoAha.style.display = 'none';
-            pseudocodigoAha.style.display = 'none';
-            diagramaAha.style.display = 'none';
+        document.getElementById('torreButton').addEventListener('click', function () {
+            ocultarTodasLasSecciones();
+            document.getElementById('infotorres').style.display = 'block';
+            document.getElementById('juegoTorres').style.display = 'block';
+            document.getElementById('diagramaHanoi').style.display = 'block';
         });
 
-        AhaButton.addEventListener('click', function () {
-            infoAha.style.display = 'block';
-            pseudocodigoAha.style.display = 'block';
-            diagramaAha.style.display = 'block';
-            reglasCaballo.style.display = 'none';
-            infoCaballo.style.display = 'none';
-            juegoCaballo.style.display = 'none';
-            infoTorres.style.display = 'none';
-            juegoTorres.style.display = 'none';
-            diagramaHanoi.style.display = 'none'; // Ocultar el diagrama
+        document.getElementById('AhaButton').addEventListener('click', function () {
+            ocultarTodasLasSecciones();
+            document.getElementById('infoAha').style.display = 'block';
+            document.getElementById('PseudocodigoAha').style.display = 'block';
+            document.getElementById('diagramaAha').style.display = 'block';
+        });
+
+        // Sketch del juego del caballo (modo instancia)
+        let sketchCaballo = function(p) {
+            const ANCHO = 400;
+            const ALTO = 400;
+            const TAMANO_CASILLA = ANCHO / 8;
+            let caballoPos = { fila: 7, columna: 4 }; // H5 inicial
+
+            p.setup = function() {
+                let canvas = p.createCanvas(ANCHO, ALTO);
+                canvas.parent('Juegocaballo');
+            };
+
+            p.draw = function() {
+                p.dibujarTablero();
+                p.mostrarMovimientos(caballoPos.fila, caballoPos.columna);
+                p.dibujarCaballo(caballoPos.fila, caballoPos.columna);
+            };
+
+            p.dibujarTablero = function() {
+                for (let fila = 0; fila < 8; fila++) {
+                    for (let columna = 0; columna < 8; columna++) {
+                        let color = (fila + columna) % 2 === 0 ? 'white' : 'black';
+                        p.fill(color);
+                        p.stroke(0);
+                        p.rect(columna * TAMANO_CASILLA, fila * TAMANO_CASILLA, TAMANO_CASILLA, TAMANO_CASILLA);
+                    }
+                }
+            };
+
+            p.dibujarCaballo = function(fila, columna) {
+                let x = columna * TAMANO_CASILLA + TAMANO_CASILLA / 2;
+                let y = fila * TAMANO_CASILLA + TAMANO_CASILLA / 2;
+                p.fill('red');
+                p.noStroke();
+                p.ellipse(x, y, TAMANO_CASILLA / 1.5);
+            };
+
+            p.mostrarMovimientos = function(fila, columna) {
+                let movimientos = [
+                    { fila: fila + 2, columna: columna + 1 },
+                    { fila: fila + 2, columna: columna - 1 },
+                    { fila: fila - 2, columna: columna + 1 },
+                    { fila: fila - 2, columna: columna - 1 },
+                    { fila: fila + 1, columna: columna + 2 },
+                    { fila: fila + 1, columna: columna - 2 },
+                    { fila: fila - 1, columna: columna + 2 },
+                    { fila: fila - 1, columna: columna - 2 },
+                ];
+
+                for (let m of movimientos) {
+                    if (m.fila >= 0 && m.fila < 8 && m.columna >= 0 && m.columna < 8) {
+                        let x = m.columna * TAMANO_CASILLA + TAMANO_CASILLA / 2;
+                        let y = m.fila * TAMANO_CASILLA + TAMANO_CASILLA / 2;
+                        p.fill('green');
+                        p.noStroke();
+                        p.ellipse(x, y, TAMANO_CASILLA / 3);
+                    }
+                }
+            };
+
+            p.mousePressed = function() {
+                let columna = Math.floor(p.mouseX / TAMANO_CASILLA);
+                let fila = Math.floor(p.mouseY / TAMANO_CASILLA);
+                let movimientosValidos = [
+                    { fila: caballoPos.fila + 2, columna: caballoPos.columna + 1 },
+                    { fila: caballoPos.fila + 2, columna: caballoPos.columna - 1 },
+                    { fila: caballoPos.fila - 2, columna: caballoPos.columna + 1 },
+                    { fila: caballoPos.fila - 2, columna: caballoPos.columna - 1 },
+                    { fila: caballoPos.fila + 1, columna: caballoPos.columna + 2 },
+                    { fila: caballoPos.fila + 1, columna: caballoPos.columna - 2 },
+                    { fila: caballoPos.fila - 1, columna: caballoPos.columna + 2 },
+                    { fila: caballoPos.fila - 1, columna: caballoPos.columna - 2 },
+                ];
+
+                for (let m of movimientosValidos) {
+                    if (m.fila === fila && m.columna === columna) {
+                        caballoPos = { fila, columna };
+                        break;
+                    }
+                }
+            };
+        };
+
+        // Sketch de las Torres de Hanoi (modo instancia)
+        let sketchTorres = function(p) {
+            const ANCHO_TORRES = 600;
+            const ALTO_TORRES = 400;
+            const NUM_DISCOS = 3;
+            const POSTE_ANCHO = 10;
+            const POSTE_ALTO = 200;
+            const DISCO_ALTURA = 20;
+            const DISCO_ANCHO_MIN = 40;
+            const DISCO_ANCHO_MAX = 120;
+
+            let postes = [[], [], []];
+            let discoSeleccionado = null;
+            let posteOrigen = null;
+
+            p.setup = function() {
+                let canvas = p.createCanvas(ANCHO_TORRES, ALTO_TORRES);
+                canvas.parent('juegoTorres');
+                p.resetJuego();
+            };
+
+            p.draw = function() {
+                p.background(255);
+                p.dibujarPostes();
+                p.dibujarDiscos();
+            };
+
+            p.resetJuego = function() {
+                postes = [[], [], []];
+                for (let i = NUM_DISCOS; i > 0; i--) {
+                    postes[0].push(i); // Todos los discos en el poste 1 al inicio
+                }
+                discoSeleccionado = null;
+                posteOrigen = null;
+            };
+
+            p.dibujarPostes = function() {
+                p.fill(0);
+                for (let i = 0; i < 3; i++) {
+                    let x = (i + 1) * (ANCHO_TORRES / 4);
+                    p.rect(x - POSTE_ANCHO / 2, ALTO_TORRES - POSTE_ALTO, POSTE_ANCHO, POSTE_ALTO);
+                }
+            };
+
+            p.dibujarDiscos = function() {
+                for (let i = 0; i < 3; i++) {
+                    for (let j = 0; j < postes[i].length; j++) {
+                        let disco = postes[i][j];
+                        let x = (i + 1) * (ANCHO_TORRES / 4);
+                        let y = ALTO_TORRES - (j + 1) * DISCO_ALTURA;
+                        let ancho = p.map(disco, 1, NUM_DISCOS, DISCO_ANCHO_MIN, DISCO_ANCHO_MAX);
+                        p.fill(100 + disco * 50, 0, 0);
+                        p.rect(x - ancho / 2, y, ancho, DISCO_ALTURA);
+                    }
+                }
+            };
+
+            p.mousePressed = function() {
+                let poste = Math.floor(p.mouseX / (ANCHO_TORRES / 4)) - 1;
+                if (poste < 0 || poste > 2) return;
+
+                if (discoSeleccionado === null) {
+                    if (postes[poste].length > 0) {
+                        discoSeleccionado = postes[poste].pop();
+                        posteOrigen = poste;
+                    }
+                } else {
+                    if (postes[poste].length === 0 || postes[poste][postes[poste].length - 1] > discoSeleccionado) {
+                        postes[poste].push(discoSeleccionado);
+                        discoSeleccionado = null;
+                        posteOrigen = null;
+                    } else {
+                        postes[posteOrigen].push(discoSeleccionado);
+                        discoSeleccionado = null;
+                        posteOrigen = null;
+                    }
+                }
+            };
+        };
+
+        // Inicializar sketches al hacer clic en los botones
+        let caballoInstance = null;
+        let torresInstance = null;
+
+        document.getElementById('caballoButton').addEventListener('click', function () {
+            if (!caballoInstance) {
+                caballoInstance = new p5(sketchCaballo);
+            }
+        });
+
+        document.getElementById('torreButton').addEventListener('click', function () {
+            if (!torresInstance) {
+                torresInstance = new p5(sketchTorres);
+            }
+        });
+
+        // Botón de reinicio para Torres de Hanoi
+        document.getElementById('resetButton').addEventListener('click', function () {
+            if (torresInstance) {
+                torresInstance.resetJuego();
+            }
         });
     </script>
 </body>
