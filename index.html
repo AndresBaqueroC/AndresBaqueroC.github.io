@@ -7,7 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <style>
         body {
-            background-image: url('fondo.png'); /* Asegúrate de usar el nombre correcto */
+            background-image: url('fondo.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -20,12 +20,43 @@
             height: auto; 
         }
     
-        #ReglasCaballo, #infocaballo, #infotorres, #Juegocaballo, #infoAha, #PseudocodigoAha {
-            display: none; /* Ocultar todas las secciones al inicio */
+        #ReglasCaballo, #infocaballo, #infotorres, #Juegocaballo, #infoAha, #PseudocodigoAha, #juegoTorres {
+            display: none;
             margin-top: 20px;
             padding: 10px;
             border: 1px solid #b13232;
             background-color: rgba(145, 171, 255, 0.8);
+        }
+
+        /* Contenedor para información y diagrama */
+        #torresContainer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        #infotorres {
+            flex: 1; /* Ocupa el espacio disponible a la izquierda */
+            margin-right: 20px; /* Espacio entre info y diagrama */
+        }
+
+        #diagramaHanoi {
+            display: none; /* Oculto por defecto */
+            max-width: 300px; /* Ajusta el tamaño según necesites */
+            height: auto;
+        }
+
+        /* Estilo para el canvas de Torres de Hanoi */
+        #juegoTorres canvas {
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #000;
+        }
+
+        #juegoTorres button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
         }
     </style>
 </head>
@@ -113,7 +144,7 @@
         </ol>
     </div>
 
-    <!-- Juego caballo -->
+    <!--juego Caballo-->
     <div id="Juegocaballo">
         <script>
             const ANCHO = 400;
@@ -198,8 +229,6 @@
             }
         </script>
     </div>
-
-
 
     <!-- Torres -->
     <div id="torresContainer">
