@@ -202,29 +202,119 @@
 
 
     <!-- Torres -->
-    <div id="infotorres">
-        <h3>Pseudo código Torres</h3>
-        <p><strong>Supongamos una torre de Hanoi con 5 discos</strong></p>
-        <ol>
-            <strong>Sacar discos del poste 1 y dejar solo 1 de mayor diámetro. x movimientos</strong>
-            <li>Primero sacar primer disco y posicionarlo en cualquiera de los postes disponibles, en este caso en el <strong>poste 2.</strong></li>
-            <li>Sacar el 2 disco del <strong>poste 1</strong> y pasarlo a <strong>poste 3</strong>.</li>
-            <li>Retirar el primer disco del <strong>poste 2</strong> y pasarlo al <strong>poste 3</strong> sobre el disco 2.</li>
-            <li>Retirar el disco 3 del poste 1 y pasarlo a <strong>poste 2</strong> el cual debería de estar vacío.</li>
-            <strong>Mayor diámetro a 3 poste.</strong>
-            <li>Retiramos el disco 1 de el <strong>poste 3</strong> y lo pasamos al <strong>poste 1</strong> encima del disco 4.</li>
-            <li>Pasamos el disco 2 del <strong>poste 3</strong> a el <strong>poste 2</strong> encima del disco 3.</li>
-            <li>Retiramos el disco 1 de el <strong>poste 1</strong> y lo pasamos al <strong>poste 2</strong> encima del disco 2.</li>
-            <li>Pasamos el disco 4 (Mayor diámetro) al <strong>poste 3</strong> el cual debería de estar vacío.</li>
-            <strong>Organizar correctamente.</strong>
-            <li>Pasamos el disco 1 del <strong>poste 2</strong> al <strong>poste 3</strong> encima del disco 4.</li>
-            <li>Pasamos del <strong>poste 2</strong> el disco 2 al <strong>poste 1</strong> que debería estar vacío.</li>
-            <li>Pasamos del <strong>poste 3</strong> el disco 1 al <strong>poste 1</strong> encima del disco 2.</li>
-            <li>Pasamos el disco 3 del <strong>poste 2</strong> al <strong>poste 3</strong> encima del disco 4.</li>
-            <li>Pasamos disco 1 del <strong>poste 1</strong> al <strong>poste 2.</strong></li>
-            <li>Pasamos del <strong>poste 1</strong> el disco 2 al <strong>poste 3</strong>.</li>
-            <li>Pasamos el disco 1 del <strong>poste 2</strong> al <strong>poste 3</strong>.</li>
-        </ol>
+    <div id="torresContainer">
+        <div id="infotorres">
+            <h3>Pseudo código Torres</h3>
+            <p><strong>Supongamos una torre de Hanoi con 5 discos</strong></p>
+            <ol>
+                <strong>Sacar discos del poste 1 y dejar solo 1 de mayor diámetro. x movimientos</strong>
+                <li>Primero sacar primer disco y posicionarlo en cualquiera de los postes disponibles, en este caso en el <strong>poste 2.</strong></li>
+                <li>Sacar el 2 disco del <strong>poste 1</strong> y pasarlo a <strong>poste 3</strong>.</li>
+                <li>Retirar el primer disco del <strong>poste 2</strong> y pasarlo al <strong>poste 3</strong> sobre el disco 2.</li>
+                <li>Retirar el disco 3 del poste 1 y pasarlo a <strong>poste 2</strong> el cual debería de estar vacío.</li>
+                <strong>Mayor diámetro a 3 poste.</strong>
+                <li>Retiramos el disco 1 de el <strong>poste 3</strong> y lo pasamos al <strong>poste 1</strong> encima del disco 4.</li>
+                <li>Pasamos el disco 2 del <strong>poste 3</strong> a el <strong>poste 2</strong> encima del disco 3.</li>
+                <li>Retiramos el disco 1 de el <strong>poste 1</strong> y lo pasamos al <strong>poste 2</strong> encima del disco 2.</li>
+                <li>Pasamos el disco 4 (Mayor diámetro) al <strong>poste 3</strong> el cual debería de estar vacío.</li>
+                <strong>Organizar correctamente.</strong>
+                <li>Pasamos el disco 1 del <strong>poste 2</strong> al <strong>poste 3</strong> encima del disco 4.</li>
+                <li>Pasamos del <strong>poste 2</strong> el disco 2 al <strong>poste 1</strong> que debería estar vacío.</li>
+                <li>Pasamos del <strong>poste 3</strong> el disco 1 al <strong>poste 1</strong> encima del disco 2.</li>
+                <li>Pasamos el disco 3 del <strong>poste 2</strong> al <strong>poste 3</strong> encima del disco 4.</li>
+                <li>Pasamos disco 1 del <strong>poste 1</strong> al <strong>poste 2.</strong></li>
+                <li>Pasamos del <strong>poste 1</strong> el disco 2 al <strong>poste 3</strong>.</li>
+                <li>Pasamos el disco 1 del <strong>poste 2</strong> al <strong>poste 3</strong>.</li>
+            </ol>
+        </div>
+        <img src="DiagramaHanoi.png" alt="Diagrama de Torres de Hanoi" id="diagramaHanoi">
+    </div>
+
+    <!-- Juego Torres de Hanoi -->
+    <div id="juegoTorres">
+        <button id="resetButton">Reiniciar</button>
+        <script>
+            const ANCHO_TORRES = 600;
+            const ALTO_TORRES = 400;
+            const NUM_DISCOS = 3;
+            const POSTE_ANCHO = 10;
+            const POSTE_ALTO = 200;
+            const DISCO_ALTURA = 20;
+            const DISCO_ANCHO_MIN = 40;
+            const DISCO_ANCHO_MAX = 120;
+
+            let postes = [[], [], []];
+            let discoSeleccionado = null;
+            let posteOrigen = null;
+
+            function setup() {
+                let canvas = createCanvas(ANCHO_TORRES, ALTO_TORRES);
+                canvas.parent('juegoTorres');
+                resetJuego();
+            }
+
+            function draw() {
+                background(255);
+                dibujarPostes();
+                dibujarDiscos();
+            }
+
+            function resetJuego() {
+                postes = [[], [], []];
+                for (let i = NUM_DISCOS; i > 0; i--) {
+                    postes[2].push(i);
+                }
+                discoSeleccionado = null;
+                posteOrigen = null;
+            }
+
+            function dibujarPostes() {
+                fill(0);
+                for (let i = 0; i < 3; i++) {
+                    let x = (i + 1) * (ANCHO_TORRES / 4);
+                    rect(x - POSTE_ANCHO / 2, ALTO_TORRES - POSTE_ALTO, POSTE_ANCHO, POSTE_ALTO);
+                }
+            }
+
+            function dibujarDiscos() {
+                for (let i = 0; i < 3; i++) {
+                    for (let j = 0; j < postes[i].length; j++) {
+                        let disco = postes[i][j];
+                        let x = (i + 1) * (ANCHO_TORRES / 4);
+                        let y = ALTO_TORRES - (j + 1) * DISCO_ALTURA;
+                        let ancho = map(disco, 1, NUM_DISCOS, DISCO_ANCHO_MIN, DISCO_ANCHO_MAX);
+                        fill(100 + disco * 50, 0, 0);
+                        rect(x - ancho / 2, y, ancho, DISCO_ALTURA);
+                    }
+                }
+            }
+
+            function mousePressed() {
+                let poste = Math.floor(mouseX / (ANCHO_TORRES / 4)) - 1;
+                if (poste < 0 || poste > 2) return;
+
+                if (discoSeleccionado === null) {
+                    if (postes[poste].length > 0) {
+                        discoSeleccionado = postes[poste].pop();
+                        posteOrigen = poste;
+                    }
+                } else {
+                    if (postes[poste].length === 0 || postes[poste][postes[poste].length - 1] > discoSeleccionado) {
+                        postes[poste].push(discoSeleccionado);
+                        discoSeleccionado = null;
+                        posteOrigen = null;
+                    } else {
+                        postes[posteOrigen].push(discoSeleccionado);
+                        discoSeleccionado = null;
+                        posteOrigen = null;
+                    }
+                }
+            }
+
+            document.getElementById('resetButton').addEventListener('click', function () {
+                resetJuego();
+            });
+        </script>
     </div>
 
     <!-- AHA -->
@@ -279,6 +369,7 @@
         </div>
     </div>
 
+
     <script>
         const caballoButton = document.getElementById('caballoButton');
         const torreButton = document.getElementById('torreButton');
@@ -289,36 +380,44 @@
         const infoAha = document.getElementById('infoAha');
         const juegoCaballo = document.getElementById('Juegocaballo');
         const pseudocodigoAha = document.getElementById('PseudocodigoAha');
-        const diagramaAha = document.getElementById('diagramaAha'); // Añadimos la imagen
-    
+        const juegoTorres = document.getElementById('juegoTorres');
+        const diagramaAha = document.getElementById('diagramaAha');
+        const diagramaHanoi = document.getElementById('diagramaHanoi');
+
         caballoButton.addEventListener('click', function () {
             reglasCaballo.style.display = 'block';
             infoCaballo.style.display = 'block';
             juegoCaballo.style.display = 'block';
             infoTorres.style.display = 'none';
+            juegoTorres.style.display = 'none';
+            diagramaHanoi.style.display = 'none';
             infoAha.style.display = 'none';
             pseudocodigoAha.style.display = 'none';
-            diagramaAha.style.display = 'none'; // Ocultamos la imagen aquí
+            diagramaAha.style.display = 'none';
         });
-    
+
         torreButton.addEventListener('click', function () {
             infoTorres.style.display = 'block';
+            juegoTorres.style.display = 'block';
+            diagramaHanoi.style.display = 'block'; // Mostrar el diagrama
             reglasCaballo.style.display = 'none';
             infoCaballo.style.display = 'none';
             juegoCaballo.style.display = 'none';
             infoAha.style.display = 'none';
             pseudocodigoAha.style.display = 'none';
-            diagramaAha.style.display = 'none'; // Ocultamos la imagen aquí
+            diagramaAha.style.display = 'none';
         });
-    
+
         AhaButton.addEventListener('click', function () {
             infoAha.style.display = 'block';
             pseudocodigoAha.style.display = 'block';
-            diagramaAha.style.display = 'block'; // Mostramos la imagen aquí
+            diagramaAha.style.display = 'block';
             reglasCaballo.style.display = 'none';
             infoCaballo.style.display = 'none';
             juegoCaballo.style.display = 'none';
             infoTorres.style.display = 'none';
+            juegoTorres.style.display = 'none';
+            diagramaHanoi.style.display = 'none'; // Ocultar el diagrama
         });
     </script>
 </body>
