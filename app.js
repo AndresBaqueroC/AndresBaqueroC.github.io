@@ -181,6 +181,7 @@ class UI {
         document.getElementById('PseudocodigoAha').style.display = 'none';
         document.getElementById('AlgoritmosContainer').style.display = 'none';
         document.getElementById('hormigasContent').style.display = 'none';
+        document.getElementById('Parcial').style.display = 'none'; // Ocultar sección de Parcial
 
         // Ocultar todas las imágenes
         document.getElementById('diagramaHanoi').style.display = 'none';
@@ -235,6 +236,12 @@ class UI {
             this.ocultarTodasLasSecciones();
             document.getElementById('hormigasContent').style.display = 'block';
             document.getElementById('DiagramaHormiga').style.display = 'block'; // Mostrar imagen de Hormiga
+        });
+
+        // Nuevo evento para el botón de Parcial
+        document.getElementById('parcialButton').addEventListener('click', () => {
+            this.ocultarTodasLasSecciones();
+            document.getElementById('Parcial').style.display = 'block'; // Mostrar sección de Parcial
         });
 
         document.getElementById('resetButton').addEventListener('click', () => {
