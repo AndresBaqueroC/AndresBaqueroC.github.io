@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parcial 2 - Algoritmos Avanzados</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .moneda {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: gold;
+            text-align: center;
+            line-height: 30px;
+            margin: 2px;
+            font-weight: bold;
+        }
+        .city-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: red;
+            margin-right: 5px;
+        }
+        .plot-container {
+            width: 100%;
+            height: 300px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Parcial 2 - Algoritmos Avanzados</h1>
+    <img src="LogoU.png" alt="Logo de la Universidad" class="logo">
+    
+    <h2>Ver ejecucion codes py</h2>
+    <button id="redireccionarButton" onclick="window.open('https://colab.research.google.com/drive/1viCDAZRQDqwPVkxTwDh0cTcOt5qmUFiR?usp=sharing', '_blank')">
+        Ejecutar parcial
+    </button>
+
+    <!-- Sección 1: Algoritmo Greedy - Problema de la Mochila -->
+    <div class="section">
+        <h2>1. Algoritmo Greedy - Problema de la Mochila</h2>
+        <button onclick="runKnapsackRandom()">Ejecutar Modo Aleatorio</button>
+        <div id="knapsack-output"></div>
+    </div>
+
+    <!-- Sección 2: Algoritmo Genético - Minimización de Función Cuadrática -->
+    <div class="section">
+        <h2>2. Algoritmo Genético - Minimizar x²</h2>
+        <button onclick="runGeneticQuadratic()">Ejecutar</button>
+        <div id="quadratic-output"></div>
+        <div class="plot-container">
+            <canvas id="quadratic-chart"></canvas>
+        </div>
+    </div>
+
+    <!-- Sección 3: Algoritmo Genético - Maximización de Función Lineal -->
+    <div class="section">
+        <h2>3. Algoritmo Genético - Maximizar 5x + 3</h2>
+        <button onclick="runGeneticLinear()">Ejecutar</button>
+        <div id="linear-output"></div>
+        <div class="plot-container">
+            <canvas id="linear-chart"></canvas>
+        </div>
+    </div>
+
+    <!-- Sección 4: Algoritmo Genético - Problema del Vendedor Viajero -->
+    <div class="section">
+        <h2>4. Algoritmo Genético - TSP (5 ciudades)</h2>
+        <button onclick="runGeneticTSP()">Ejecutar</button>
+        <div id="tsp-output"></div>
+        <div class="plot-container">
+            <canvas id="tsp-chart"></canvas>
+        </div>
+    </div>
+
+    <!-- Sección 5: Algoritmo Genético - Números Primos -->
+    <div class="section">
+        <h2>5. Algoritmo Genético - Números Primos</h2>
+        <input type="number" id="prime-input" placeholder="Ingrese un número" min="2">
+        <button onclick="runGeneticPrime()">Buscar Primo Cercano</button>
+        <div id="prime-output"></div>
+    </div>
+
+    <!-- Sección 6: Algoritmo Genético - Problema del Cambio -->
+    <div class="section">
+        <h2>6. Algoritmo Genético - Problema del Cambio</h2>
+        <input type="number" id="change-input" placeholder="Monto en centavos" min="1">
+        <button onclick="runGeneticChange()">Calcular Cambio</button>
+        <div id="change-output"></div>
+    </div>
+
+    <script>
+        // ===== Sección 1: Problema de la Mochila =====
+        function knapsackGreedy(capacity, weights, values, n) {
+            let items = [];
+            for (let i = 0; i < n; i++) {
+                items.push({
+                    index: i,
+                    weight: weights[i],
+                    value: values[i],
+                    ratio: values[i] / weights[i]
+                });
+            }
+            
+            items.sort((a, b) => b.ratio - a.ratio);
+            
+            let totalValue = 0;
+            let remainingCapacity = capacity;
+            let selectedItems = [];
+            
+            for (let item of items) {
+                if (remainingCapacity <= 0) break;
+                
+                if (item.weight <= remainingCapacity) {
+                    selectedItems.push({
+                        weight: item.weight,
+                        value: item.value,
+                        fraction: 1
+                    });
+                    totalValue += item.value;
+                    remainingCapacity -= item.weight;
+                } else {
+                    const fraction = remainingCapacity / item.weight;
+                    selectedItems.push({
+                        weight: item.weight,
+                        value: item.value,
+                        fraction: fraction
+                    });
+                    totalValue += item.value * fraction;
+                    remainingCapacity = 0;
+                }
+            }
+            
+            return { maxValue: totalValue, selectedItems: selectedItems };
+        }
+
+        function runKnapsackRandom() {
+            const output = document.getElementById("knapsack-output");
+            output.innerHTML = "";
+            
+            const capacity = Math.round(Math.random() * 90 + 10);
+            const n = Math.floor(Math.random() * 8) + 3;
+            
+            const weights = Array.from({length: n}, () => Math.round(Math.random() * 19 + 1));
+            const values = Array.from({length: n}, () => Math.round(Math.random() * 45 + 5));
+            
+            output.innerHTML += `<p>Capacidad de mochila: ${capacity}</p>`;
+            output.innerHTML += "<p>Items disponibles:</p><ul>";
+            weights.forEach((w, i) => {
+                output.innerHTML += `<li>Item ${i+1}: Peso = ${w}, Valor = ${values[i]}, Ratio = ${(values[i]/w).toFixed(2)}</li>`;
+            });
+            output.innerHTML += "</ul>";
+            
+            const start = performance.now();
+            const { maxValue, selectedItems } = knapsackGreedy(capacity, weights, values, n);
+            const end = performance.now();
+            
+            output.innerHTML += "<p>RESULTADO:</p>";
+            output.innerHTML += `<p>Valor máximo obtenido: ${maxValue.toFixed(2)}</p>`;
+            output.innerHTML += "<p>Items seleccionados:</p><ul>";
+            selectedItems.forEach((item, i) => {
+                output.innerHTML += `<li>Item ${i+1}: Peso ${item.weight}, Valor ${item.value}, Fracción: ${(item.fraction*100).toFixed(2)}%</li>`;
+            });
+            output.innerHTML += "</ul>";
+            output.innerHTML += `<p>Tiempo ejecución: ${(end-start).toFixed(4)} ms</p>`;
+        }
+
+        // ===== Sección 2: Minimización de Función Cuadrática =====
+        function runGeneticQuadratic() {
+            const output = document.getElementById("quadratic-output");
+            output.innerHTML = "";
+            
+            const iterations = 20;
+            const populationSize = 20;
+            const ctx = document.getElementById('quadratic-chart').getContext('2d');
+            
+            // Limpiar gráfico anterior si existe
+            if (window.quadraticChart) {
+                window.quadraticChart.destroy();
+            }
+            
+            // Función de aptitud (queremos minimizar x²)
+            function fitness(x) {
+                return x * x;
+            }
+            
+            // Crear población inicial
+            function createPopulation(size) {
+                return Array.from({length: size}, () => Math.random() * 20 - 10);
+            }
+            
+            // Selección (los mejores son los que tienen menor fitness)
+            function selection(population) {
+                return [...population].sort((a, b) => fitness(a) - fitness(b)).slice(0, population.length/2);
+            }
+            
+            // Cruce aritmético
+            function crossover(parent1, parent2) {
+                const alpha = Math.random();
+                const child1 = alpha * parent1 + (1 - alpha) * parent2;
+                const child2 = alpha * parent2 + (1 - alpha) * parent1;
+                return [child1, child2];
+            }
+            
+            // Mutación gaussiana
+            function mutate(individual) {
+                return individual + (Math.random() - 0.5) * 2;
+            }
+            
+            // Ejecutar algoritmo genético
+            let population = createPopulation(populationSize);
+            const bestFitnessHistory = [];
+            
+            for (let gen = 0; gen < iterations; gen++) {
+                const selected = selection(population);
+                const nextGeneration = [Math.min(...population)]; // Elitismo
+                
+                while (nextGeneration.length < populationSize) {
+                    const parents = [selected[Math.floor(Math.random() * selected.length)], 
+                                   selected[Math.floor(Math.random() * selected.length)]];
+                    const [child1, child2] = crossover(parents[0], parents[1]);
+                    nextGeneration.push(mutate(child1));
+                    if (nextGeneration.length < populationSize) {
+                        nextGeneration.push(mutate(child2));
+                    }
+                }
+                
+                population = nextGeneration;
+                const best = Math.min(...population);
+                bestFitnessHistory.push(fitness(best));
+                
+                output.innerHTML += `Generación ${gen+1}: Mejor solución: ${best.toFixed(4)}, Fitness: ${fitness(best).toFixed(4)}<br>`;
+            }
+            
+            const bestSolution = Math.min(...population);
+            output.innerHTML += `<p><strong>Mejor solución encontrada:</strong> ${bestSolution.toFixed(6)}</p>`;
+            
+            // Dibujar gráfico
+            window.quadraticChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: iterations}, (_, i) => i+1),
+                    datasets: [{
+                        label: 'Mejor Fitness por Generación',
+                        data: bestFitnessHistory,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Fitness (x²)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Generación'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ===== Sección 3: Maximización de Función Lineal =====
+        function runGeneticLinear() {
+            const output = document.getElementById("linear-output");
+            output.innerHTML = "";
+            
+            const iterations = 20;
+            const populationSize = 20;
+            const ctx = document.getElementById('linear-chart').getContext('2d');
+            
+            // Limpiar gráfico anterior si existe
+            if (window.linearChart) {
+                window.linearChart.destroy();
+            }
+            
+            // Función de aptitud (queremos maximizar 5x + 3)
+            function fitness(x) {
+                return 5 * x + 3;
+            }
+            
+            // Crear población inicial
+            function createPopulation(size) {
+                return Array.from({length: size}, () => Math.random() * 20 - 10);
+            }
+            
+            // Selección (los mejores son los que tienen mayor fitness)
+            function selection(population) {
+                return [...population].sort((a, b) => fitness(b) - fitness(a)).slice(0, population.length/2);
+            }
+            
+            // Cruce y mutación (igual que antes)
+            function crossover(parent1, parent2) {
+                const alpha = Math.random();
+                const child1 = alpha * parent1 + (1 - alpha) * parent2;
+                const child2 = alpha * parent2 + (1 - alpha) * parent1;
+                return [child1, child2];
+            }
+            
+            function mutate(individual) {
+                return individual + (Math.random() - 0.5) * 2;
+            }
+            
+            // Ejecutar algoritmo genético
+            let population = createPopulation(populationSize);
+            const bestFitnessHistory = [];
+            
+            for (let gen = 0; gen < iterations; gen++) {
+                const selected = selection(population);
+                const nextGeneration = [Math.max(...population, key => fitness(key))]; // Elitismo
+                
+                while (nextGeneration.length < populationSize) {
+                    const parents = [selected[Math.floor(Math.random() * selected.length)], 
+                                   selected[Math.floor(Math.random() * selected.length)]];
+                    const [child1, child2] = crossover(parents[0], parents[1]);
+                    nextGeneration.push(mutate(child1));
+                    if (nextGeneration.length < populationSize) {
+                        nextGeneration.push(mutate(child2));
+                    }
+                }
+                
+                population = nextGeneration;
+                const best = [...population].sort((a, b) => fitness(b) - fitness(a))[0];
+                bestFitnessHistory.push(fitness(best));
+                
+                output.innerHTML += `Generación ${gen+1}: Mejor solución: ${best.toFixed(4)}, Fitness: ${fitness(best).toFixed(4)}<br>`;
+            }
+            
+            const bestSolution = [...population].sort((a, b) => fitness(b) - fitness(a))[0];
+            output.innerHTML += `<p><strong>Mejor solución encontrada:</strong> ${bestSolution.toFixed(6)}</p>`;
+            
+            // Dibujar gráfico
+            window.linearChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: iterations}, (_, i) => i+1),
+                    datasets: [{
+                        label: 'Mejor Fitness por Generación',
+                        data: bestFitnessHistory,
+                        borderColor: 'rgb(153, 102, 255)',
+                        tension: 0.1,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Fitness (5x + 3)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Generación'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ===== Sección 4: Problema del Vendedor Viajero =====
+        function runGeneticTSP() {
+            const output = document.getElementById("tsp-output");
+            output.innerHTML = "";
+            
+            const cities = [
+                {x: 0, y: 0, name: "A"},
+                {x: 1, y: 2, name: "B"},
+                {x: 3, y: 1, name: "C"},
+                {x: 5, y: 3, name: "D"},
+                {x: 6, y: 5, name: "E"}
+            ];
+            
+            const ctx = document.getElementById('tsp-chart').getContext('2d');
+            
+            // Limpiar gráfico anterior si existe
+            if (window.tspChart) {
+                window.tspChart.destroy();
+            }
+            
+            // Función para calcular distancia entre dos ciudades
+            function distance(city1, city2) {
+                return Math.sqrt(Math.pow(city1.x - city2.x, 2) + Math.pow(city1.y - city2.y, 2));
+            }
+            
+            // Función de aptitud (distancia total del recorrido)
+            function fitness(route) {
+                let totalDistance = 0;
+                for (let i = 0; i < route.length - 1; i++) {
+                    totalDistance += distance(cities[route[i]], cities[route[i+1]]);
+                }
+                // Volver al punto de inicio
+                totalDistance += distance(cities[route[route.length-1]], cities[route[0]]);
+                return totalDistance;
+            }
+            
+            // Crear población inicial (permutaciones aleatorias)
+            function createPopulation(size) {
+                const base = [0, 1, 2, 3, 4];
+                return Array.from({length: size}, () => {
+                    const shuffled = [...base];
+                    for (let i = shuffled.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                    }
+                    return shuffled;
+                });
+            }
+            
+            // Selección por torneo
+            function selection(population, k=3) {
+                return Array.from({length: population.length}, () => {
+                    const tournament = Array.from({length: k}, () => 
+                        population[Math.floor(Math.random() * population.length)]);
+                    return tournament.reduce((best, current) => 
+                        fitness(current) < fitness(best) ? current : best);
+                });
+            }
+            
+            // Cruce OX (Order Crossover)
+            function crossover(parent1, parent2) {
+                const size = parent1.length;
+                const [a, b] = [Math.floor(Math.random() * size), Math.floor(Math.random() * size)].sort((x, y) => x - y);
+                
+                // Hijo 1
+                const segment = parent1.slice(a, b+1);
+                const remaining = parent2.filter(city => !segment.includes(city));
+                const child1 = [...remaining.slice(0, a), ...segment, ...remaining.slice(a)];
+                
+                // Hijo 2
+                const segment2 = parent2.slice(a, b+1);
+                const remaining2 = parent1.filter(city => !segment2.includes(city));
+                const child2 = [...remaining2.slice(0, a), ...segment2, ...remaining2.slice(a)];
+                
+                return [child1, child2];
+            }
+            
+            // Mutación por intercambio
+            function mutate(individual, rate=0.2) {
+                if (Math.random() < rate) {
+                    const i = Math.floor(Math.random() * individual.length);
+                    const j = Math.floor(Math.random() * individual.length);
+                    [individual[i], individual[j]] = [individual[j], individual[i]];
+                }
+                return individual;
+            }
+            
+            // Ejecutar algoritmo genético
+            const populationSize = 50;
+            const generations = 50;
+            let population = createPopulation(populationSize);
+            let bestRoute = [...population[0]];
+            let bestDistance = fitness(bestRoute);
+            
+            const bestDistances = [];
+            
+            output.innerHTML += "<p>Ciudades:</p><ul>";
+            cities.forEach(city => {
+                output.innerHTML += `<li>${city.name}: (${city.x}, ${city.y})</li>`;
+            });
+            output.innerHTML += "</ul>";
+            
+            for (let gen = 0; gen < generations; gen++) {
+                const selected = selection(population);
+                const nextGeneration = [bestRoute]; // Elitismo
+                
+                while (nextGeneration.length < populationSize) {
+                    const parents = [
+                        selected[Math.floor(Math.random() * selected.length)], 
+                        selected[Math.floor(Math.random() * selected.length)]
+                    ];
+                    const [child1, child2] = crossover(parents[0], parents[1]);
+                    nextGeneration.push(mutate(child1));
+                    if (nextGeneration.length < populationSize) {
+                        nextGeneration.push(mutate(child2));
+                    }
+                }
+                
+                population = nextGeneration;
+                
+                // Encontrar el mejor de esta generación
+                const currentBest = population.reduce((best, current) => 
+                    fitness(current) < fitness(best) ? current : best);
+                const currentDistance = fitness(currentBest);
+                
+                if (currentDistance < bestDistance) {
+                    bestRoute = [...currentBest];
+                    bestDistance = currentDistance;
+                }
+                
+                bestDistances.push(bestDistance);
+                
+                output.innerHTML += `Generación ${gen+1}: Mejor distancia: ${bestDistance.toFixed(2)}<br>`;
+            }
+            
+            // Mostrar mejor ruta
+            output.innerHTML += `<p><strong>Mejor ruta encontrada:</strong> ${bestRoute.map(i => cities[i].name).join(" → ")} → ${cities[bestRoute[0]].name}</p>`;
+            output.innerHTML += `<p>Distancia total: ${bestDistance.toFixed(2)}</p>`;
+            
+            // Dibujar gráfico de la ruta
+            const routeCoords = bestRoute.map(i => cities[i]);
+            routeCoords.push(routeCoords[0]); // Volver al inicio
+            
+            window.tspChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Ruta óptima',
+                        data: routeCoords.map(city => ({x: city.x, y: city.y})),
+                        showLine: true,
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                        pointRadius: 8,
+                        pointHoverRadius: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            title: {
+                                display: true,
+                                text: 'Coordenada X'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Coordenada Y'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return cities.find(c => c.x === context.parsed.x && c.y === context.parsed.y).name;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ===== Sección 5: Números Primos =====
+        function runGeneticPrime() {
+            const output = document.getElementById("prime-output");
+            const input = document.getElementById("prime-input");
+            const target = parseInt(input.value);
+            
+            if (isNaN(target) || target < 2) {
+                output.innerHTML = "<p>Por favor ingrese un número entero mayor o igual a 2</p>";
+                return;
+            }
+            
+            output.innerHTML = "";
+            
+            // Función para verificar si un número es primo
+            function isPrime(num) {
+                if (num <= 1) return false;
+                if (num === 2) return true;
+                if (num % 2 === 0) return false;
+                for (let i = 3; i <= Math.sqrt(num); i += 2) {
+                    if (num % i === 0) return false;
+                }
+                return true;
+            }
+            
+            // Función para encontrar los primos más cercanos
+            function findNearestPrimes(num) {
+                if (num < 2) return {lower: 2, upper: 2};
+                
+                let lower = num - 1;
+                while (lower >= 2 && !isPrime(lower)) lower--;
+                
+                let upper = num + 1;
+                while (!isPrime(upper)) upper++;
+                
+                return {lower, upper};
+            }
+            
+            // Función de evaluación (menor distancia al target, con penalización si no es primo)
+            function evaluate(individual, target) {
+                const num = Math.round(individual[0]);
+                if (isPrime(num)) {
+                    return Math.abs(num - target);
+                } else {
+                    const {lower, upper} = findNearestPrimes(num);
+                    const distance = Math.min(Math.abs(lower - target), Math.abs(upper - target));
+                    return distance + 10; // Penalización por no ser primo
+                }
+            }
+            
+            // Crear población inicial
+            function createPopulation(size, target) {
+                const lowerBound = Math.max(2, target - 50);
+                const upperBound = target + 50;
+                return Array.from({length: size}, () => [Math.floor(Math.random() * (upperBound - lowerBound + 1) + lowerBound)]);
+            }
+            
+            // Selección por torneo
+            function selection(population, target, k=3) {
+                return Array.from({length: population.length}, () => {
+                    const tournament = Array.from({length: k}, () => 
+                        population[Math.floor(Math.random() * population.length)]);
+                    return tournament.reduce((best, current) => 
+                        evaluate(current, target) < evaluate(best, target) ? current : best);
+                });
+            }
+            
+            // Cruce aritmético
+            function crossover(parent1, parent2) {
+                const alpha = Math.random();
+                const child1 = [alpha * parent1[0] + (1 - alpha) * parent2[0]];
+                const child2 = [alpha * parent2[0] + (1 - alpha) * parent1[0]];
+                return [child1, child2];
+            }
+            
+            // Mutación
+            function mutate(individual, rate=0.2) {
+                if (Math.random() < rate) {
+                    individual[0] += Math.floor(Math.random() * 21) - 10; // -10 a +10
+                    individual[0] = Math.max(2, individual[0]);
+                }
+                return individual;
+            }
+            
+            // Ejecutar algoritmo genético
+            const populationSize = 20;
+            const generations = 30;
+            let population = createPopulation(populationSize, target);
+            let bestIndividual = [...population[0]];
+            let bestFitness = evaluate(bestIndividual, target);
+            
+            output.innerHTML += `<p>Buscando el número primo más cercano a ${target}...</p>`;
+            
+            for (let gen = 0; gen < generations; gen++) {
+                const selected = selection(population, target);
+                const nextGeneration = [[...bestIndividual]]; // Elitismo
+                
+                while (nextGeneration.length < populationSize) {
+                    const parents = [
+                        selected[Math.floor(Math.random() * selected.length)], 
+                        selected[Math.floor(Math.random() * selected.length)]
+                    ];
+                    const [child1, child2] = crossover(parents[0], parents[1]);
+                    nextGeneration.push(mutate(child1));
+                    if (nextGeneration.length < populationSize) {
+                        nextGeneration.push(mutate(child2));
+                    }
+                }
+                
+                population = nextGeneration;
+                
+                // Encontrar el mejor de esta generación
+                const currentBest = population.reduce((best, current) => 
+                    evaluate(current, target) < evaluate(best, target) ? current : best);
+                const currentFitness = evaluate(currentBest, target);
+                
+                if (currentFitness < bestFitness) {
+                    bestIndividual = [...currentBest];
+                    bestFitness = currentFitness;
+                }
+                
+                const bestNum = Math.round(bestIndividual[0]);
+                if (isPrime(bestNum)) {
+                    output.innerHTML += `Generación ${gen+1}: Encontrado primo ${bestNum} (Distancia: ${Math.abs(bestNum - target)})<br>`;
+                } else {
+                    const {lower, upper} = findNearestPrimes(bestNum);
+                    const closest = (Math.abs(lower - target) <= Math.abs(upper - target)) ? lower : upper;
+                    output.innerHTML += `Generación ${gen+1}: Número ${bestNum} → Primo más cercano: ${closest} (Distancia: ${Math.abs(closest - target)})<br>`;
+                }
+            }
+            
+            // Resultado final
+            const bestNum = Math.round(bestIndividual[0]);
+            let finalPrime;
+            
+            if (isPrime(bestNum)) {
+                finalPrime = bestNum;
+            } else {
+                const {lower, upper} = findNearestPrimes(bestNum);
+                finalPrime = (Math.abs(lower - target) <= Math.abs(upper - target)) ? lower : upper;
+            }
+            
+            const {lower, upper} = findNearestPrimes(target);
+            
+            output.innerHTML += `<p><strong>Resultado final:</strong></p>`;
+            output.innerHTML += `<p>El número primo más cercano a ${target} es ${finalPrime} (distancia: ${Math.abs(finalPrime - target)})</p>`;
+            output.innerHTML += `<p>Primos más cercanos a ${target}:</p>`;
+            output.innerHTML += `<ul><li>Primo inferior: ${lower} (distancia: ${target - lower})</li>`;
+            output.innerHTML += `<li>Primo superior: ${upper} (distancia: ${upper - target})</li></ul>`;
+            
+            if (finalPrime === lower) {
+                output.innerHTML += "<p>El algoritmo encontró que el primo inferior es el más cercano.</p>";
+            } else {
+                output.innerHTML += "<p>El algoritmo encontró que el primo superior es el más cercano.</p>";
+            }
+        }
+
+        // ===== Sección 6: Problema del Cambio =====
+        function runGeneticChange() {
+            const output = document.getElementById("change-output");
+            const input = document.getElementById("change-input");
+            const target = parseInt(input.value);
+            
+            if (isNaN(target) || target <= 0) {
+                output.innerHTML = "<p>Por favor ingrese un monto válido mayor que cero</p>";
+                return;
+            }
+            
+            output.innerHTML = "";
+            
+            const COINS = [100, 50, 25, 10, 5, 1]; // Valores en centavos
+            
+            // Función para generar un individuo (solución candidata)
+            function generateIndividual(target) {
+                let remaining = target;
+                const individual = [];
+                
+                while (remaining > 0 && individual.length < 30) {
+                    const validCoins = COINS.filter(coin => coin <= remaining);
+                    if (validCoins.length === 0) break;
+                    
+                    const coin = validCoins[Math.floor(Math.random() * validCoins.length)];
+                    individual.push(coin);
+                    remaining -= coin;
+                }
+                
+                // Si aún queda, completar con monedas de 1
+                while (remaining > 0) {
+                    individual.push(1);
+                    remaining -= 1;
+                }
+                
+                return individual;
+            }
+            
+            // Función para evaluar la aptitud (menos monedas mejor, con penalización por no alcanzar el target)
+            function evaluate(individual, target) {
+                const sum = individual.reduce((a, b) => a + b, 0);
+                const penalty = Math.abs(sum - target) * 100; // Gran penalización por no alcanzar el target
+                return individual.length + penalty;
+            }
+            
+            // Selección por torneo
+            function selection(population, target, k=3) {
+                return Array.from({length: population.length}, () => {
+                    const tournament = Array.from({length: k}, () => 
+                        population[Math.floor(Math.random() * population.length)]);
+                    return tournament.reduce((best, current) => 
+                        evaluate(current, target) < evaluate(best, target) ? current : best);
+                });
+            }
+            
+            // Cruce (mezcla de ambas soluciones)
+            function crossover(parent1, parent2) {
+                const point = Math.floor(Math.random() * Math.min(parent1.length, parent2.length));
+                const child1 = [...parent1.slice(0, point), ...parent2.slice(point)];
+                const child2 = [...parent2.slice(0, point), ...parent1.slice(point)];
+                return [child1, child2];
+            }
+            
+            // Mutación (agregar, eliminar o reemplazar monedas)
+            function mutate(individual, target, rate=0.2) {
+                if (Math.random() < rate) {
+                    const mutationType = Math.floor(Math.random() * 3);
+                    const sum = individual.reduce((a, b) => a + b, 0);
+                    
+                    if (mutationType === 0 && sum < target) {
+                        // Agregar moneda válida
+                        const validCoins = COINS.filter(coin => coin <= (target - sum));
+                        if (validCoins.length > 0) {
+                            individual.push(validCoins[Math.floor(Math.random() * validCoins.length)]);
+                        } else {
+                            individual.push(1);
+                        }
+                    } else if (mutationType === 1 && individual.length > 1) {
+                        // Eliminar moneda
+                        individual.splice(Math.floor(Math.random() * individual.length), 1);
+                    } else if (mutationType === 2 && individual.length > 0) {
+                        // Reemplazar moneda
+                        const index = Math.floor(Math.random() * individual.length);
+                        const currentSum = individual.reduce((a, b) => a + b, 0) - individual[index];
+                        const remaining = target - currentSum;
+                        
+                        if (remaining > 0) {
+                            const validCoins = COINS.filter(coin => coin <= remaining);
+                            if (validCoins.length > 0) {
+                                individual[index] = validCoins[Math.floor(Math.random() * validCoins.length)];
+                            } else {
+                                individual[index] = 1;
+                            }
+                        }
+                    }
+                }
+                
+                // Asegurar que no exceda el target
+                let sum = individual.reduce((a, b) => a + b, 0);
+                while (sum > target && individual.length > 0) {
+                    individual.pop();
+                    sum = individual.reduce((a, b) => a + b, 0);
+                }
+                
+                // Completar si falta
+                while (sum < target) {
+                    const remaining = target - sum;
+                    const validCoins = COINS.filter(coin => coin <= remaining);
+                    if (validCoins.length > 0) {
+                        const coin = validCoins[Math.floor(Math.random() * validCoins.length)];
+                        individual.push(coin);
+                        sum += coin;
+                    } else {
+                        individual.push(1);
+                        sum += 1;
+                    }
+                }
+                
+                return individual;
+            }
+            
+            // Algoritmo genético
+            const populationSize = 50;
+            const generations = 100;
+            let population = Array.from({length: populationSize}, () => generateIndividual(target));
+            let bestSolution = [...population[0]];
+            let bestFitness = evaluate(bestSolution, target);
+            
+            output.innerHTML += `<p>Buscando solución para ${target}¢ utilizando el menor número de monedas...</p>`;
+            
+            for (let gen = 0; gen < generations; gen++) {
+                const selected = selection(population, target);
+                const nextGeneration = [[...bestSolution]]; // Elitismo
+                
+                while (nextGeneration.length < populationSize) {
+                    const parents = [
+                        selected[Math.floor(Math.random() * selected.length)], 
+                        selected[Math.floor(Math.random() * selected.length)]
+                    ];
+                    const [child1, child2] = crossover(parents[0], parents[1]);
+                    nextGeneration.push(mutate(child1, target));
+                    if (nextGeneration.length < populationSize) {
+                        nextGeneration.push(mutate(child2, target));
+                    }
+                }
+                
+                population = nextGeneration;
+                
+                // Encontrar el mejor de esta generación
+                const currentBest = population.reduce((best, current) => 
+                    evaluate(current, target) < evaluate(best, target) ? current : best);
+                const currentFitness = evaluate(currentBest, target);
+                
+                if (currentFitness < bestFitness) {
+                    bestSolution = [...currentBest];
+                    bestFitness = currentFitness;
+                    
+                    output.innerHTML += `Generación ${gen+1}: Mejor - ${bestSolution.length} monedas: [${bestSolution.join(', ')}] (Suma: ${bestSolution.reduce((a, b) => a + b, 0)}¢)<br>`;
+                }
+                
+                // Si encontramos solución óptima, terminar
+                if (bestFitness === bestSolution.length && bestSolution.reduce((a, b) => a + b, 0) === target) {
+                    break;
+                }
+            }
+            
+            // Resultado final
+            output.innerHTML += "<p><strong>Resultado final:</strong></p>";
+            output.innerHTML += `<p>Monto objetivo: ${target}¢</p>`;
+            output.innerHTML += `<p>Monedas usadas: ${bestSolution.length}</p>`;
+            output.innerHTML += `<p>Desglose: [${bestSolution.join(', ')}]</p>`;
+            output.innerHTML += `<p>Suma: ${bestSolution.reduce((a, b) => a + b, 0)}¢</p>`;
+            
+            // Mostrar monedas visualmente
+            output.innerHTML += "<p>Representación visual:</p>";
+            bestSolution.forEach(coin => {
+                let coinClass = "moneda";
+                if (coin === 100) coinClass += " dollar";
+                else if (coin === 50) coinClass += " half-dollar";
+                else if (coin === 25) coinClass += " quarter";
+                else if (coin === 10) coinClass += " dime";
+                else if (coin === 5) coinClass += " nickel";
+                
+                output.innerHTML += `<div class="${coinClass}">${coin}</div>`;
+            });
+            
+            // Solución óptima de referencia (algoritmo voraz)
+            function optimalChange(target) {
+                let remaining = target;
+                const change = [];
+                const sortedCoins = [...COINS].sort((a, b) => b - a);
+                
+                for (const coin of sortedCoins) {
+                    while (remaining >= coin) {
+                        change.push(coin);
+                        remaining -= coin;
+                    }
+                }
+                
+                return change;
+            }
+            
+            const optimalSolution = optimalChange(target);
+            output.innerHTML += `<p><strong>Solución óptima (referencia):</strong> ${optimalSolution.length} monedas</p>`;
+            output.innerHTML += `<p>Desglose óptimo: [${optimalSolution.join(', ')}]</p>`;
+            
+            if (bestSolution.length === optimalSolution.length) {
+                output.innerHTML += "<p>¡El algoritmo genético encontró la solución óptima!</p>";
+            } else {
+                output.innerHTML += "<p>El algoritmo genético encontró una solución cercana a la óptima.</p>";
+            }
+        }
+    </script>
+</body>
+</html>
