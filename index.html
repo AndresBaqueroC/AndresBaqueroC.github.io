@@ -3,116 +3,375 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parcial 2 - Ejercicios No Lineales</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Parcial 3 - Autómatas y Compiladores</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+            --accent-color: #4fc3f7;
+            --background-color: #f5f7fa;
+            --card-color: #ffffff;
+            --text-color: #333333;
+            --error-color: #e53935;
+            --success-color: #43a047;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .exercise-card {
+            background-color: var(--card-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .exercise-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .exercise-header {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .exercise-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .exercise-content {
+            padding: 1.5rem;
+            border-top: 1px solid #eee;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .code-block {
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 1rem;
+            font-family: 'Courier New', Courier, monospace;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .output {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f0f4f8;
+            border-radius: 4px;
+            min-height: 50px;
+        }
+
+        .token {
+            display: inline-block;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            padding: 0.3rem 0.6rem;
+            background-color: #e3f2fd;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .token-type {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .maze-container {
+            display: flex;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .maze {
+            border-collapse: collapse;
+        }
+
+        .maze-cell {
+            width: 25px;
+            height: 25px;
+            border: 1px solid #ddd;
+            text-align: center;
+            vertical-align: middle;
+            font-weight: bold;
+        }
+
+        .cell-empty {
+            background-color: white;
+        }
+
+        .cell-obstacle {
+            background-color: #333;
+        }
+
+        .cell-start {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .cell-goal {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        .cell-path {
+            background-color: #bbdefb;
+        }
+
+        .cell-robot {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        .state-info {
+            margin-top: 1rem;
+            padding: 0.8rem;
+            background-color: #e8f5e9;
+            border-left: 4px solid var(--success-color);
+            border-radius: 4px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .exercise-header h2 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Parcial 2 - Ejercicios No Lineales</h1>
-    <img src="LogoU.png" alt="Logo de la Universidad" class="logo">
-    
-    <h2>Ver ejecución codes py</h2>
-    <button id="redireccionarButton" onclick="window.open('https://colab.research.google.com/drive/1viCDAZRQDqwPVkxTwDh0cTcOt5qmUFiR?usp=sharing', '_blank')">
-        Ejecutar parcial
-    </button>
-    
-    <!-- Sección 1: Carrito de compras -->
-    <div class="section">
-        <h2>1. Carrito de compras con productos repetidos</h2>
-        <button onclick="runCart()">Ejecutar</button>
-        <div id="cart-output"></div>
+    <header>
+        <h1>Parcial 3 - Autómatas y Compiladores</h1>
+        <p>Simuladores y ejercicios prácticos</p>
+    </header>
+
+    <div class="container">
+        <!-- Ejercicio 1: Analizador Léxico -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise('exercise1')">
+                <h2>1. Analizador Léxico</h2>
+                <span>+</span>
+            </div>
+            <div id="exercise1" class="exercise-content hidden">
+                <p>Simulador de un compilador léxico que identifica tokens en código fuente.</p>
+                <div class="code-block">
+                    <p>Tokens reconocidos: NUMERO, IDENTIFICADOR, OPERADOR (+,-,*,/,=), PARENTESIS ( ), espacios ignorados</p>
+                </div>
+                <div class="input-group">
+                    <label for="lexer-input">Ingrese código para analizar:</label>
+                    <input type="text" id="lexer-input" placeholder="Ej: x = 42 + (y * 3)">
+                </div>
+                <button class="btn" onclick="runLexer()">Analizar</button>
+                <div class="output" id="lexer-output">
+                    <p>Los tokens aparecerán aquí...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ejercicio 2: Autómata para Lenguajes Regulares -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise('exercise2')">
+                <h2>2. Autómata para Lenguajes Regulares</h2>
+                <span>+</span>
+            </div>
+            <div id="exercise2" class="exercise-content hidden">
+                <p>Autómata que acepta cadenas con número par de 'a's e impar de 'b's.</p>
+                <div class="input-group">
+                    <label for="dfa-input">Ingrese una cadena (solo 'a' y 'b'):</label>
+                    <input type="text" id="dfa-input" placeholder="Ej: aabab">
+                </div>
+                <button class="btn" onclick="runDFA()">Validar</button>
+                <div class="output" id="dfa-output">
+                    <p>El resultado de la validación aparecerá aquí...</p>
+                </div>
+                <div class="state-info" id="dfa-states">
+                    <p>Estado inicial: (True, False)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ejercicio 3: Balance de Paréntesis -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise('exercise3')">
+                <h2>3. Balance de Paréntesis</h2>
+                <span>+</span>
+            </div>
+            <div id="exercise3" class="exercise-content hidden">
+                <p>Autómata que valida si una expresión tiene paréntesis balanceados.</p>
+                <div class="input-group">
+                    <label for="paren-input">Ingrese una expresión:</label>
+                    <input type="text" id="paren-input" placeholder="Ej: (a+b)*(c-(d/e))">
+                </div>
+                <button class="btn" onclick="checkParentheses()">Validar</button>
+                <div class="output" id="paren-output">
+                    <p>El resultado de la validación aparecerá aquí...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ejercicio 4: Máquina de Turing -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise('exercise4')">
+                <h2>4. Máquina de Turing</h2>
+                <span>+</span>
+            </div>
+            <div id="exercise4" class="exercise-content hidden">
+                <p>Simulador de una Máquina de Turing que valida cadenas binarias.</p>
+                <div class="input-group">
+                    <label for="turing-input">Ingrese una cadena binaria:</label>
+                    <input type="text" id="turing-input" placeholder="Ej: 101001">
+                </div>
+                <button class="btn" onclick="runTuringMachine()">Ejecutar</button>
+                <div class="output" id="turing-output">
+                    <p>La ejecución paso a paso aparecerá aquí...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ejercicio 6: Autómata de Pila -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise('exercise6')">
+                <h2>6. Autómata de Pila</h2>
+                <span>+</span>
+            </div>
+            <div id="exercise6" class="exercise-content hidden">
+                <p>Autómata de pila para reconocer palíndromos de longitud par.</p>
+                <div class="input-group">
+                    <label for="pda-input">Ingrese una cadena (solo 'a' y 'b'):</label>
+                    <input type="text" id="pda-input" placeholder="Ej: abba">
+                </div>
+                <button class="btn" onclick="runPDA()">Validar</button>
+                <div class="output" id="pda-output">
+                    <p>El resultado de la validación aparecerá aquí...</p>
+                </div>
+                <div class="state-info" id="pda-states">
+                    <p>Estado inicial: q0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ejercicio 7-8: Navegación en Laberinto -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise('exercise7')">
+                <h2>7-8. Navegación en Laberinto</h2>
+                <span>+</span>
+            </div>
+            <div id="exercise7" class="exercise-content hidden">
+                <p>Simulación de un robot que navega por un laberinto usando un autómata.</p>
+                <div class="maze-container">
+                    <table class="maze" id="maze-grid"></table>
+                </div>
+                <button class="btn" onclick="initMaze()">Generar Laberinto</button>
+                <button class="btn" onclick="runRobot()" id="run-robot-btn" disabled>Ejecutar Robot</button>
+                <div class="output" id="robot-output">
+                    <p>La simulación del robot aparecerá aquí...</p>
+                </div>
+                <div class="state-info" id="robot-states">
+                    <p>Estado inicial: Explorando</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ejercicio 9: Generador de Lenguajes Regulares -->
+        <div class="exercise-card">
+            <div class="exercise-header" onclick="toggleExercise('exercise9')">
+                <h2>9. Generador de Lenguajes Regulares</h2>
+                <span>+</span>
+            </div>
+            <div id="exercise9" class="exercise-content hidden">
+                <p>Generador de cadenas válidas para un lenguaje regular definido.</p>
+                <div class="input-group">
+                    <label for="regex-pattern">Patrón de expresión regular:</label>
+                    <input type="text" id="regex-pattern" value="\(\d{3}\) \d{3}-\d{4}" placeholder="Ej: \(\d{3}\) \d{3}-\d{4}">
+                </div>
+                <button class="btn" onclick="generateRegex()">Generar Cadena</button>
+                <div class="output" id="regex-output">
+                    <p>Las cadenas generadas aparecerán aquí...</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Sección 2: Correos únicos -->
-    <div class="section">
-        <h2>2. Registro de correos únicos (Set)</h2>
-        <button onclick="runEmails()">Ejecutar</button>
-        <div id="emails-output"></div>
-    </div>
-
-    <!-- Sección 3: Agenda de contactos -->
-    <div class="section">
-        <h2>3. Agenda de contactos (Diccionario)</h2>
-        <button onclick="runContacts()">Ejecutar</button>
-        <div id="contacts-output"></div>
-    </div>
-
-    <!-- Sección 4: BFS y DFS -->
-    <div class="section">
-        <h2>4. BFS y DFS en una cuadrícula</h2>
-        <button onclick="initGrid()">Generar Laberinto</button>
-        <button onclick="runBFS()">Ejecutar BFS</button>
-        <button onclick="runDFS()">Ejecutar DFS</button>
-        <div id="grid-container"></div>
-        <div id="grid-output"></div>
-    </div>
-
-    <!-- Sección 5: Función de deshacer -->
-    <div class="section">
-        <h2>5. Función de deshacer (Stack)</h2>
-        <button onclick="runUndo()">Ejecutar</button>
-        <div id="undo-output"></div>
-    </div>
-
-    <!-- Sección 6: Atención por turnos -->
-    <div class="section">
-        <h2>6. Atención por turnos (Queue)</h2>
-        <button onclick="runTurns()">Ejecutar</button>
-        <div id="turns-output"></div>
-    </div>
-
-     <!-- Sección 7: Búsqueda en Árbol Binario -->
-     <div class="section">
-        <h2>7. Búsqueda en Árbol Binario</h2>
-        <button onclick="runBinaryTree()">Ejecutar</button>
-        <div id="tree-output"></div>
-        <div id="tree-container" style="width: 600px; height: 400px;"></div>
-    </div>
-
-    <!-- Sección 8: Profundidad de Árbol -->
-    <div class="section">
-        <h2>8. Profundidad de Árbol</h2>
-        <button onclick="runTreeDepth()">Ejecutar</button>
-        <div id="depth-output"></div>
-        <div id="balanced-tree-container" style="width: 600px; height: 400px;"></div>
-    </div>
-
-    <!-- Sección 15: Tareas con prioridad -->
-    <div class="section">
-        <h2>15. Tareas con prioridad (Heap)</h2>
-        <button onclick="runPriorityTasks()">Ejecutar</button>
-        <div id="tasks-output"></div>
-    </div>
-
-    <!-- Sección 16: Inversión de jerarquía -->
-    <div class="section">
-        <h2>16. Inversión de jerarquía (Árbol)</h2>
-        <button onclick="runTreeInversion()">Ejecutar</button>
-        <div id="tree-inversion-output"></div>
-        <div id="tree-inversion-container" style="width: 600px; height: 400px;"></div>
-    </div>
-
-    <!-- Sección 18: Ruta más corta (Dijkstra) -->
-    <div class="section">
-        <h2>18. Ruta más corta en mapas (Dijkstra)</h2>
-        <button onclick="runDijkstra()">Ejecutar</button>
-        <div id="dijkstra-output"></div>
-        <div id="dijkstra-container" style="width: 600px; height: 400px;"></div>
-    </div>
-
-    <!-- Sección 19: Floyd-Warshall -->
-    <div class="section">
-        <h2>19. Floyd-Warshall (Todos los caminos)</h2>
-        <button onclick="runFloydWarshall()">Ejecutar</button>
-        <div id="floyd-output"></div>
-        <table id="floyd-table"></table>
-    </div>
-
-    <!-- Sección 20: Visualización ASCII de grafos -->
-    <div class="section">
-        <h2>20. Visualización de Grafos</h2>
-        <button onclick="drawGraph()">Dibujar Grafo</button>
-        <div id="graph-container" style="width: 600px; height: 400px;"></div>
-    </div>
+    <footer>
+        <p>Simuladores de Autómatas y Compiladores - Parcial 3</p>
+    </footer>
 
     <script src="script.js"></script>
 </body>
